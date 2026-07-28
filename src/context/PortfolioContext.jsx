@@ -60,6 +60,10 @@ const DEFAULT_SCRIPTS_CONFIG = {
   footerScripts: ""
 };
 
+const API_BASE_URL = typeof window !== 'undefined' && (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')
+  ? 'http://localhost:5000'
+  : 'https://usama-portfolio-backend-16jd.onrender.com';
+
 export function PortfolioProvider({ children }) {
   const [data, setData] = useState(INITIAL_DATA);
   const [sectionStyles, setSectionStyles] = useState(DEFAULT_SECTION_STYLES);
@@ -73,7 +77,7 @@ export function PortfolioProvider({ children }) {
   useEffect(() => {
     async function loadSettings() {
       try {
-        const res = await fetch('http://localhost:5000/api/settings');
+        const res = await fetch(`${API_BASE_URL}/api/settings`);
         const json = await res.json();
         if (json.success && json.settings) {
           if (json.settings.sectionStyles) setSectionStyles(prev => ({ ...prev, ...json.settings.sectionStyles }));
@@ -102,7 +106,7 @@ export function PortfolioProvider({ children }) {
     setSectionStyles(newStyles);
     localStorage.setItem('usama_section_styles', JSON.stringify(newStyles));
     try {
-      await fetch('http://localhost:5000/api/settings', {
+      await fetch(`${API_BASE_URL}/api/settings`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ sectionStyles: newStyles, scriptsConfig })
@@ -114,7 +118,7 @@ export function PortfolioProvider({ children }) {
     setScriptsConfig(newScripts);
     localStorage.setItem('usama_scripts_config', JSON.stringify(newScripts));
     try {
-      await fetch('http://localhost:5000/api/settings', {
+      await fetch(`${API_BASE_URL}/api/settings`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ sectionStyles, scriptsConfig: newScripts })

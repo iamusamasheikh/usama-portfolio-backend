@@ -14,6 +14,19 @@ const PORT = process.env.PORT || 5000;
 app.use(cors());
 app.use(express.json());
 
+// Root Health Check Route
+app.get('/', (req, res) => {
+  res.json({
+    status: "online",
+    message: "Usama Sheikh Portfolio Backend API Engine is running live!",
+    endpoints: {
+      contact: "POST /api/contact",
+      leads: "GET /api/leads",
+      settings: "GET /api/settings"
+    }
+  });
+});
+
 const leadsFilePath = path.join(__dirname, 'src', 'data', 'leads.json');
 
 // Ensure leads.json exists
