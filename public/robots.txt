@@ -1,0 +1,26 @@
+# Robots.txt for Usama Sheikh Portfolio (usamasheikh.com)
+# Optimized for Search Engines (Google, Bing) & Generative AI Engines (OpenAI, Perplexity, Claude)
+
+User-agent: *
+Allow: /
+Disallow: /admin
+Disallow: /api/
+
+# AI Crawlers & Answer Engines (AEO & GEO Enabled)
+User-agent: GPTBot
+Allow: /
+
+User-agent: ChatGPT-User
+Allow: /
+
+User-agent: PerplexityBot
+Allow: /
+
+User-agent: ClaudeBot
+Allow: /
+
+User-agent: ByteSpider
+Allow: /
+
+# Sitemap Location
+Sitemap: https://usamasheikh.com/sitemap.xml
