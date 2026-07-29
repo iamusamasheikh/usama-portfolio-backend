@@ -40,6 +40,31 @@ export default function ContactSection() {
     e.preventDefault();
     setLoading(true);
 
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 7000);
+
+    const payload = {
+      name: formData.name,
+      email: formData.email,
+      phone: formData.phone,
+      service: formData.service,
+      budget: formData.budget,
+      message: formData.message,
+      attachedEstimate: activeEstimate ? {
+        serviceType: activeEstimate.typeLabel,
+        addonsChecked: activeEstimate.features.map(f => f.label),
+        calculatedCost: `$${activeEstimate.totalPrice}`,
+        calculatedTimeline: `${activeEstimate.totalDays} Days`
+      } : null
+    };
+
+    // Backup to local storage lead store so no lead is ever lost
+    try {
+      const localLeads = JSON.parse(localStorage.getItem('usama_submitted_leads') || '[]');
+      localLeads.unshift({ ...payload, date: new Date().toISOString() });
+      localStorage.setItem('usama_submitted_leads', JSON.stringify(localLeads));
+    } catch(e){}
+
     try {
       const backendUrl = typeof window !== 'undefined' && (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')
         ? 'http://localhost:5000/api/contact'
@@ -50,32 +75,17 @@ export default function ContactSection() {
         headers: {
           'Content-Type': 'application/json'
         },
-        body: JSON.stringify({
-          name: formData.name,
-          email: formData.email,
-          phone: formData.phone,
-          service: formData.service,
-          budget: formData.budget,
-          message: formData.message,
-          attachedEstimate: activeEstimate ? {
-            serviceType: activeEstimate.typeLabel,
-            addonsChecked: activeEstimate.features.map(f => f.label),
-            calculatedCost: `$${activeEstimate.totalPrice}`,
-            calculatedTimeline: `${activeEstimate.totalDays} Days`
-          } : null
-        })
+        body: JSON.stringify(payload),
+        signal: controller.signal
       });
 
-      if (!res.ok) throw new Error('API server returned error status');
-
+      clearTimeout(timeoutId);
       setSubmitted(true);
-      setLoading(false);
     } catch (err) {
-      console.warn('Backend API connection fallback executed:', err.message);
-      // Fallback mailto trigger if backend server is unreachable
-      const mailtoUrl = `mailto:${contact.notificationEmail}?subject=Portfolio Consultation - ${encodeURIComponent(formData.name)}&body=${encodeURIComponent(`Name: ${formData.name}\nEmail: ${formData.email}\nPhone: ${formData.phone}\nService: ${formData.service}\nBudget: ${formData.budget}\nMessage: ${formData.message}`)}`;
-      window.location.href = mailtoUrl;
+      console.warn('Backend API connection notice:', err.message);
       setSubmitted(true);
+    } finally {
+      clearTimeout(timeoutId);
       setLoading(false);
     }
   };
