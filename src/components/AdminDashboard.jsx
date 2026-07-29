@@ -64,11 +64,15 @@ export default function AdminDashboard() {
     if (scriptsConfig) setScriptsForm(scriptsConfig);
   }, [scriptsConfig]);
 
+  const API_BASE_URL = typeof window !== 'undefined' && (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')
+    ? 'http://localhost:5000'
+    : 'https://usama-portfolio-backend-16jd.onrender.com';
+
   // Fetch leads from backend API
   const fetchLeads = async () => {
     setLoadingLeads(true);
     try {
-      const res = await fetch('http://localhost:5000/api/leads');
+      const res = await fetch(`${API_BASE_URL}/api/leads`);
       const json = await res.json();
       if (json.success) {
         setLeads(json.leads || []);
@@ -88,7 +92,7 @@ export default function AdminDashboard() {
 
   const deleteLead = async (id) => {
     try {
-      const res = await fetch(`http://localhost:5000/api/leads/${id}`, { method: 'DELETE' });
+      const res = await fetch(`${API_BASE_URL}/api/leads/${id}`, { method: 'DELETE' });
       const json = await res.json();
       if (json.success) {
         setLeads(prev => prev.filter(l => l.id !== id));

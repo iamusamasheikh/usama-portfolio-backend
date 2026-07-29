@@ -38,7 +38,7 @@ if (!fs.existsSync(leadsFilePath)) {
 const transporter = nodemailer.createTransport({
   service: 'gmail',
   auth: {
-    user: process.env.EMAIL_USER || 'officialusamano1@gmail.com',
+    user: process.env.EMAIL_USER || 'hello@usamasheikh.com',
     pass: process.env.EMAIL_PASS || '' // Set App Password in .env if using Gmail SMTP
   }
 });
@@ -109,7 +109,7 @@ app.post('/api/contact', async (req, res) => {
 
     // A. Notification Email to Usama Sheikh
     const adminMailOptions = {
-      from: `"Usama Sheikh Portfolio" <officialusamano1@gmail.com>`,
+      from: `"Usama Sheikh Portfolio" <hello@usamasheikh.com>`,
       to: 'officialusamano1@gmail.com',
       subject: `🚨 New Lead Inquiry: ${name} (${service})`,
       html: `
@@ -139,7 +139,7 @@ app.post('/api/contact', async (req, res) => {
 
     // B. Automatic Branded Confirmation Email to Client
     const clientMailOptions = {
-      from: `"Usama Sheikh" <officialusamano1@gmail.com>`,
+      from: `"Usama Sheikh" <hello@usamasheikh.com>`,
       to: email,
       subject: `Thank you for reaching out, ${name}! - Usama Sheikh`,
       html: `

@@ -41,7 +41,9 @@ export default function ContactSection() {
     setLoading(true);
 
     try {
-      const backendUrl = window.location.hostname === 'localhost' ? 'http://localhost:5000/api/contact' : '/api/contact';
+      const backendUrl = typeof window !== 'undefined' && (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')
+        ? 'http://localhost:5000/api/contact'
+        : 'https://usama-portfolio-backend-16jd.onrender.com/api/contact';
       
       const res = await fetch(backendUrl, {
         method: 'POST',

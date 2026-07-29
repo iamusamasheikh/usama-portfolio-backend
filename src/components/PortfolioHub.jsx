@@ -122,6 +122,7 @@ export default function PortfolioHub() {
 
   const [activeCategory, setActiveCategory] = useState('All');
   const [searchQuery, setSearchQuery] = useState('');
+  const [visibleCount, setVisibleCount] = useState(9);
 
   const categories = [
     'All',
@@ -167,6 +168,20 @@ export default function PortfolioHub() {
     });
   }, [projects, activeCategory, searchQuery]);
 
+  const displayedProjects = useMemo(() => {
+    return filteredProjects.slice(0, visibleCount);
+  }, [filteredProjects, visibleCount]);
+
+  const handleCategorySelect = (cat) => {
+    setActiveCategory(cat);
+    setVisibleCount(9);
+  };
+
+  const handleSearchChange = (e) => {
+    setSearchQuery(e.target.value);
+    setVisibleCount(9);
+  };
+
   return (
     <section id="portfolio" className="section-padding" style={{ background: 'var(--bg-secondary)', borderTop: '1px solid var(--border-color)', borderBottom: '1px solid var(--border-color)' }}>
       <div className="container">
@@ -174,7 +189,7 @@ export default function PortfolioHub() {
         {/* Section Header */}
         <div style={{ textAlign: 'center', maxWidth: '850px', margin: '0 auto 3rem auto' }}>
           <span className="badge badge-gold" style={{ marginBottom: '0.75rem' }}>
-            PROVEN TRACK RECORD (80+ DELIVERED)
+            PROVEN TRACK RECORD ({projects.length}+ DELIVERED)
           </span>
           <h2 style={{ fontSize: 'clamp(2.2rem, 4vw, 3rem)', marginBottom: '1rem' }}>
             Featured Live Work & <span className="gradient-text">High-ROI Campaigns</span>
@@ -201,7 +216,7 @@ export default function PortfolioHub() {
             {categories.map((cat) => (
               <button
                 key={cat}
-                onClick={() => setActiveCategory(cat)}
+                onClick={() => handleCategorySelect(cat)}
                 style={{
                   padding: '0.7rem 1.35rem',
                   borderRadius: '50px',
@@ -233,7 +248,7 @@ export default function PortfolioHub() {
               type="text"
               placeholder="Search by site name, link, or tag (e.g., sufyanafzaal, NYC, Shopify, Google Ads)..."
               value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
+              onChange={handleSearchChange}
               style={{
                 width: '100%',
                 padding: '0.85rem 1rem 0.85rem 3rem',
@@ -255,7 +270,7 @@ export default function PortfolioHub() {
           gridTemplateColumns: 'repeat(auto-fill, minmax(360px, 1fr))',
           gap: '2.25rem'
         }}>
-          {filteredProjects.map((project) => {
+          {displayedProjects.map((project) => {
             return (
               <div key={project.id} className="glass-panel" style={{
                 display: 'flex',
@@ -374,10 +389,29 @@ export default function PortfolioHub() {
           })}
         </div>
 
+        {/* Load More Projects Button */}
+        {visibleCount < filteredProjects.length && (
+          <div style={{ textAlign: 'center', marginTop: '3.5rem' }}>
+            <button
+              onClick={() => setVisibleCount(prev => prev + 9)}
+              className="btn btn-primary"
+              style={{
+                padding: '0.9rem 2.2rem',
+                fontSize: '1rem',
+                borderRadius: '50px',
+                boxShadow: '0 0 25px var(--glow-emerald)',
+                cursor: 'pointer'
+              }}
+            >
+              Load More Projects (+9) — Showing {displayedProjects.length} of {filteredProjects.length}
+            </button>
+          </div>
+        )}
+
         {filteredProjects.length === 0 && (
           <div style={{ textAlign: 'center', padding: '4rem 0', color: 'var(--text-muted)' }}>
             <p style={{ fontSize: '1.1rem', marginBottom: '0.5rem' }}>No projects match your current search.</p>
-            <button className="btn btn-secondary" onClick={() => { setActiveCategory('All'); setSearchQuery(''); }}>
+            <button className="btn btn-secondary" onClick={() => { handleCategorySelect('All'); setSearchQuery(''); }}>
               Reset Search & Filters
             </button>
           </div>
