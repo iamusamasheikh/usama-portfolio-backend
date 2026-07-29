@@ -66,11 +66,10 @@ export default function ContactSection() {
     } catch(e){}
 
     try {
-      const backendUrl = typeof window !== 'undefined' && (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')
-        ? 'http://localhost:5000/api/contact'
-        : 'https://usama-portfolio-backend-16jd.onrender.com/api/contact';
+      const isLocal = typeof window !== 'undefined' && (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1');
+      const backendUrl = isLocal ? 'http://localhost:5000/api/contact' : './mail.php';
       
-      const res = await fetch(backendUrl, {
+      let res = await fetch(backendUrl, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
@@ -78,6 +77,15 @@ export default function ContactSection() {
         body: JSON.stringify(payload),
         signal: controller.signal
       });
+
+      // Fallback to Render backend if mail.php returns non-200
+      if (!res.ok && !isLocal) {
+        res = await fetch('https://usama-portfolio-backend-16jd.onrender.com/api/contact', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+      }
 
       clearTimeout(timeoutId);
       setSubmitted(true);
